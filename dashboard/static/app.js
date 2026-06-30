@@ -14,7 +14,9 @@ const STATE = {
     demos: [],
     activeProject: null,
     activeDemo: null,
-    renderSocket: null
+    renderSocket: null,
+    expandedScriptSectionId: null,
+    expandedSceneId: null
 };
 
 const CANONICAL_STAGE_ARTIFACTS = {
@@ -463,20 +465,41 @@ function renderArtifactTabs() {
             <h5>Title: ${scriptData.title || "AI Video"}</h5>
             <p class="text-muted mb-3">Duration: ${scriptData.total_duration_seconds} seconds</p>
             <div class="script-sections-list">
-                ${scriptData.sections.map(sec => `
-                    <div class="script-section-block">
+                ${scriptData.sections.map(sec => {
+                    const isExpanded = STATE.expandedScriptSectionId === sec.id;
+                    return `
+                    <div class="script-section-block ${isExpanded ? 'expanded' : ''}" onclick="toggleScriptSection('${sec.id}', event)">
                         <div class="script-section-header">
                             <span>ID: ${sec.id} (${sec.label})</span>
                             <span>${sec.start_seconds}s - ${sec.end_seconds}s</span>
                         </div>
-                        <p class="script-section-text">${sec.text}</p>
-                        ${sec.enhancement_cues && sec.enhancement_cues.length ? `
-                            <div class="script-section-cues">
-                                <strong>Visual Cues:</strong> ${sec.enhancement_cues.map(cue => cue.description).join(", ")}
+                        ${isExpanded ? `
+                            <div class="edit-form mt-2">
+                                <div class="form-group mb-2">
+                                    <label class="form-label">Narration Text</label>
+                                    <textarea class="form-control w-100" id="edit-script-text-${sec.id}" rows="3" onclick="event.stopPropagation()">${sec.text}</textarea>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label class="form-label">Speaker Directions</label>
+                                    <input type="text" class="form-control" id="edit-script-directions-${sec.id}" value="${sec.speaker_directions || ''}" onclick="event.stopPropagation()">
+                                </div>
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <button class="btn btn-secondary btn-sm" onclick="cancelScriptEdit(event)">Cancel</button>
+                                    <button class="btn btn-primary btn-sm" onclick="saveScriptEdit('${sec.id}', event)">Save Changes</button>
+                                </div>
                             </div>
-                        ` : ""}
+                        ` : `
+                            <p class="script-section-text">${sec.text}</p>
+                            ${sec.enhancement_cues && sec.enhancement_cues.length ? `
+                                <div class="script-section-cues">
+                                    <strong>Visual Cues:</strong> ${sec.enhancement_cues.map(cue => cue.description).join(", ")}
+                                </div>
+                            ` : ""}
+                            <div class="edit-hint text-muted mt-2 text-xs"><i class="fas fa-edit"></i> Click to expand and edit</div>
+                        `}
                     </div>
-                `).join("")}
+                    `;
+                }).join("")}
             </div>
         `;
     } else {
@@ -493,23 +516,56 @@ function renderArtifactTabs() {
         scenePane.innerHTML = `
             <h5>Style Playbook: <span class="status-pill purple">${scenePlan.style_playbook}</span></h5>
             <div class="scene-plan-list mt-3">
-                ${scenePlan.scenes.map(sc => `
-                    <div class="scene-plan-card">
-                        <div class="scene-info">
-                            <span class="scene-num">${sc.id}</span>
-                            <span class="scene-type-badge">${sc.type}</span>
-                            <p class="scene-desc">${sc.description}</p>
-                            ${sc.required_assets && sc.required_assets.length ? `
-                                <div class="scene-assets">
-                                    <strong>Required Assets:</strong> ${sc.required_assets.map(a => `${a.type} (${a.source})`).join(", ")}
+                ${scenePlan.scenes.map(sc => {
+                    const isExpanded = STATE.expandedSceneId === sc.id;
+                    return `
+                    <div class="scene-plan-card ${isExpanded ? 'expanded' : ''}" onclick="toggleSceneSection('${sc.id}', event)">
+                        ${isExpanded ? `
+                            <div class="scene-info w-100">
+                                <div class="scene-info-header border-b pb-2 mb-2 d-flex justify-content-between">
+                                    <span class="scene-num">${sc.id}</span>
+                                    <span>${sc.start_seconds}s - ${sc.end_seconds}s</span>
                                 </div>
-                            ` : ""}
-                        </div>
-                        <div class="scene-time">
-                            <span>${sc.start_seconds}s - ${sc.end_seconds}s</span>
-                        </div>
+                                <div class="edit-form w-100">
+                                    <div class="form-group mb-2">
+                                        <label class="form-label">Scene Description</label>
+                                        <textarea class="form-control w-100" id="edit-scene-desc-${sc.id}" rows="3" onclick="event.stopPropagation()">${sc.description}</textarea>
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label class="form-label">Visual Type</label>
+                                        <select class="form-control" id="edit-scene-type-${sc.id}" onclick="event.stopPropagation()">
+                                            <option value="text_card" ${sc.type === 'text_card' ? 'selected' : ''}>Text Card</option>
+                                            <option value="animation" ${sc.type === 'animation' ? 'selected' : ''}>Animation</option>
+                                            <option value="video" ${sc.type === 'video' ? 'selected' : ''}>Video</option>
+                                            <option value="image" ${sc.type === 'image' ? 'selected' : ''}>Image</option>
+                                            <option value="talking_head" ${sc.type === 'talking_head' ? 'selected' : ''}>Talking Head</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-flex gap-2 justify-content-end mt-2">
+                                        <button class="btn btn-secondary btn-sm" onclick="cancelSceneEdit(event)">Cancel</button>
+                                        <button class="btn btn-primary btn-sm" onclick="saveSceneEdit('${sc.id}', event)">Save Changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="scene-info">
+                                <span class="scene-num">${sc.id}</span>
+                                <span class="scene-type-badge">${sc.type}</span>
+                                <p class="scene-desc">${sc.description}</p>
+                                ${sc.required_assets && sc.required_assets.length ? `
+                                    <div class="scene-assets">
+                                        <strong>Required Assets:</strong> ${sc.required_assets.map(a => `${a.type} (${a.source})`).join(", ")}
+                                    </div>
+                                ` : ""}
+                            </div>
+                            <div class="scene-time">
+                                <span>${sc.start_seconds}s - ${sc.end_seconds}s</span>
+                                <div class="edit-hint text-muted mt-2 text-xs"><i class="fas fa-edit"></i> Edit</div>
+                            </div>
+                        `}
                     </div>
-                `).join("")}
+                    `;
+                }).join("")}
             </div>
         `;
     } else {
@@ -921,5 +977,110 @@ function toggleInputMask(id) {
         el.type = "text";
     } else {
         el.type = "password";
+    }
+}
+
+// Expand / Edit Handlers
+function toggleScriptSection(secId, event) {
+    if (event.target.closest('.edit-form')) return;
+    if (STATE.expandedScriptSectionId === secId) {
+        STATE.expandedScriptSectionId = null;
+    } else {
+        STATE.expandedScriptSectionId = secId;
+    }
+    renderArtifactTabs();
+}
+
+function cancelScriptEdit(event) {
+    event.stopPropagation();
+    STATE.expandedScriptSectionId = null;
+    renderArtifactTabs();
+}
+
+async function saveScriptEdit(secId, event) {
+    event.stopPropagation();
+    const dp = STATE.activeProject;
+    if (!dp) return;
+    
+    const textVal = document.getElementById(`edit-script-text-${secId}`).value;
+    const dirVal = document.getElementById(`edit-script-directions-${secId}`).value;
+    
+    const scriptArtifact = JSON.parse(JSON.stringify(dp.checkpoints.script.artifacts.script));
+    const sec = scriptArtifact.sections.find(s => s.id === secId);
+    if (sec) {
+        sec.text = textVal;
+        sec.speaker_directions = dirVal;
+    }
+    
+    try {
+        const res = await fetch(`/api/projects/${dp.project_id}/checkpoints/script`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ artifact: scriptArtifact })
+        });
+        
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || "Failed to save script edits");
+        }
+        
+        STATE.expandedScriptSectionId = null;
+        await viewProjectDetails(dp.project_id);
+    } catch (e) {
+        alert("Error saving changes: " + e.message);
+    }
+}
+
+function toggleSceneSection(scId, event) {
+    if (event.target.closest('.edit-form')) return;
+    if (STATE.expandedSceneId === scId) {
+        STATE.expandedSceneId = null;
+    } else {
+        STATE.expandedSceneId = scId;
+    }
+    renderArtifactTabs();
+}
+
+function cancelSceneEdit(event) {
+    event.stopPropagation();
+    STATE.expandedSceneId = null;
+    renderArtifactTabs();
+}
+
+async function saveSceneEdit(scId, event) {
+    event.stopPropagation();
+    const dp = STATE.activeProject;
+    if (!dp) return;
+    
+    const descVal = document.getElementById(`edit-scene-desc-${scId}`).value;
+    const typeVal = document.getElementById(`edit-scene-type-${scId}`).value;
+    
+    const scenePlanArtifact = JSON.parse(JSON.stringify(dp.checkpoints.scene_plan.artifacts.scene_plan));
+    const scene = scenePlanArtifact.scenes.find(s => s.id === scId);
+    if (scene) {
+        scene.description = descVal;
+        scene.type = typeVal;
+    }
+    
+    try {
+        const res = await fetch(`/api/projects/${dp.project_id}/checkpoints/scene_plan`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ artifact: scenePlanArtifact })
+        });
+        
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || "Failed to save scene plan edits");
+        }
+        
+        STATE.expandedSceneId = null;
+        await viewProjectDetails(dp.project_id);
+    } catch (e) {
+        alert("Error saving changes: " + e.message);
     }
 }

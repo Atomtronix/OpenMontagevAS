@@ -1307,3 +1307,59 @@ video {
 .orange { color: var(--color-warning); }
 .mt-2 { margin-top: 8px; }
 .mb-2 { margin-bottom: 8px; }
+
+/* Interactive & Expandable Artifact Card Styles */
+.script-section-block,
+.scene-plan-card {
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.script-section-block:hover,
+.scene-plan-card:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(99, 102, 241, 0.3);
+    transform: translateY(-1px);
+}
+
+.script-section-block.expanded,
+.scene-plan-card.expanded {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.1);
+    cursor: default;
+    transform: none;
+}
+
+.script-section-block.expanded:hover,
+.scene-plan-card.expanded:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: var(--color-primary);
+    transform: none;
+}
+
+.script-section-block.expanded .script-section-header,
+.scene-plan-card.expanded .scene-info-header {
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.scene-plan-card.expanded {
+    flex-direction: column;
+}
+
+.edit-hint {
+    font-size: 0.7rem;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.script-section-block:hover .edit-hint,
+.scene-plan-card:hover .edit-hint {
+    opacity: 0.9;
+}

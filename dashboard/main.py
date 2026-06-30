@@ -214,6 +214,67 @@ async def get_project_details(project_id: str):
         "files": files,
     }
 
+@app.post("/api/projects/{project_id}/checkpoints/{stage}")
+async def update_project_checkpoint(project_id: str, stage: str, data: Dict[str, Any]):
+    """Update artifact data for a project's stage checkpoint and re-write it."""
+    project_dir = PIPELINE_DIR / project_id
+    if not project_dir.exists() or not project_dir.is_dir():
+        raise HTTPException(status_code=404, detail="Project not found")
+        
+    cp_file = project_dir / f"checkpoint_{stage}.json"
+    if not cp_file.exists():
+        raise HTTPException(status_code=404, detail=f"Checkpoint for stage {stage} not found")
+        
+    try:
+        with open(cp_file) as f:
+            cp_data = json.load(f)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to read existing checkpoint: {e}")
+        
+    pipeline_type = cp_data.get("pipeline_type", "unknown")
+    style_playbook = cp_data.get("style_playbook", "clean-professional")
+    
+    # Map stage name to artifact key
+    artifact_name = stage
+    if stage == "research":
+        artifact_name = "research_brief"
+    elif stage == "proposal":
+        artifact_name = "proposal_packet"
+    elif stage == "assets":
+        artifact_name = "asset_manifest"
+    elif stage == "edit":
+        artifact_name = "edit_decisions"
+    elif stage == "compose":
+        artifact_name = "render_report"
+    elif stage == "publish":
+        artifact_name = "publish_log"
+        
+    artifact_data = data.get("artifact")
+    if not artifact_data:
+        raise HTTPException(status_code=400, detail="Missing 'artifact' field in payload")
+        
+    from schemas.artifacts import validate_artifact
+    try:
+        validate_artifact(artifact_name, artifact_data)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Artifact failed schema validation: {e}")
+        
+    from lib.checkpoint import write_checkpoint
+    try:
+        write_checkpoint(
+            PIPELINE_DIR,
+            project_id,
+            stage=stage,
+            status="completed",
+            artifacts={artifact_name: artifact_data},
+            pipeline_type=pipeline_type,
+            style_playbook=style_playbook,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to write checkpoint: {e}")
+        
+    return {"success": True}
+
 @app.post("/api/projects")
 async def create_project(data: Dict[str, Any]):
     """Initialize a new project folder and create a research/idea stage checkpoint."""
