@@ -498,6 +498,36 @@ async def serve_root():
         return f.read()
 
 def get_mock_artifact_for_stage(stage: str, project_id: str, pipeline_type: str) -> Dict[str, Any]:
+    if stage == "idea":
+        return {
+            "brief": {
+                "version": "1.0",
+                "title": "Introduction to OpenMontage",
+                "hook": "What if you could automate video production completely?",
+                "key_points": ["Fast", "Flexible", "Beautiful"],
+                "tone": "professional",
+                "style": "clean-professional",
+                "target_platform": "generic",
+                "target_duration_seconds": 60
+            },
+            "decision_log": {
+                "version": "1.0",
+                "project_id": project_id,
+                "decisions": [
+                    {
+                        "decision_id": "d-001",
+                        "stage": "idea",
+                        "category": "pipeline_selection",
+                        "subject": "Select avatar-spokesperson pipeline",
+                        "options_considered": [
+                            {"option_id": "opt-1", "label": "avatar-spokesperson", "score": 1.0, "reason": "Good for spokesperson"}
+                        ],
+                        "selected": "opt-1",
+                        "reason": "Spokesperson is the best fit."
+                    }
+                ]
+            }
+        }
     if stage == "research":
         return {
             "research_brief": {
@@ -743,7 +773,7 @@ async def pipeline_auto_runner():
             if project_id == "demos":
                 continue
                 
-            checkpoint_stages = ["research", "proposal", "script", "scene_plan", "assets", "edit", "compose", "publish"]
+            checkpoint_stages = ["idea", "research", "proposal", "script", "scene_plan", "assets", "edit", "compose", "publish"]
             latest_stage = None
             latest_status = None
             latest_time = 0

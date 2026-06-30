@@ -17,6 +17,18 @@ const STATE = {
     renderSocket: null
 };
 
+const CANONICAL_STAGE_ARTIFACTS = {
+    idea: "brief",
+    research: "research_brief",
+    proposal: "proposal_packet",
+    script: "script",
+    scene_plan: "scene_plan",
+    assets: "asset_manifest",
+    edit: "edit_decisions",
+    compose: "render_report",
+    publish: "publish_log"
+};
+
 // Initialization
 function initApp() {
     setupTabNavigation();
