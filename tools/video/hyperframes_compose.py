@@ -250,55 +250,78 @@ class HyperFramesCompose(BaseTool):
     def _resolve_npm_package(cls) -> dict[str, str]:
         """Verify the `hyperframes` npm package actually resolves.
 
-        `_runtime_check` previously only verified that node/ffmpeg/npx existed
-        on PATH, which meant `runtime_available: True` on any machine with
-        Node + FFmpeg — even offline, even if npm was down, even if the
-        package was unpublished. This method performs a cheap
-        `npm view hyperframes version` (5s timeout) and caches the answer
-        for the rest of the process.
-
-        Returns {"version": "X.Y.Z"} on success, {"error": "<short>"} on any
-        failure (404, timeout, network error, npm missing). Never raises.
+        First attempts to check the local npx cache using a fast, offline-safe
+        `npx --no-install hyperframes --version`. If not found, falls back to
+        an online `npm view hyperframes version` check. Transient errors are
+        not permanently cached.
         """
-        if cls._npm_resolve_cache is not None:
+        # Only return cached result if it was a success.
+        # Transient errors are retried.
+        if cls._npm_resolve_cache is not None and "error" not in cls._npm_resolve_cache:
             return cls._npm_resolve_cache
 
+        # 1. Fast, offline-safe local cache check first
+        npx = shutil.which("npx")
+        if npx:
+            try:
+                cmd = [npx, "--no-install", cls._NPM_PACKAGE, "--version"]
+                if os.name == "nt":
+                    resolved = shutil.which(cmd[0])
+                    if resolved:
+                        cmd[0] = resolved
+                proc = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    timeout=3,
+                )
+                if proc.returncode == 0:
+                    version = proc.stdout.strip()
+                    if version:
+                        cls._npm_resolve_cache = {"version": version}
+                        return cls._npm_resolve_cache
+            except Exception:
+                pass
+
+        # 2. Online fallback check
         npm = shutil.which("npm")
         if not npm:
-            cls._npm_resolve_cache = {"error": "npm not on PATH"}
-            return cls._npm_resolve_cache
+            return {"error": "npm not on PATH"}
 
         try:
+            cmd = [npm, "view", cls._NPM_PACKAGE, "version"]
+            if os.name == "nt":
+                resolved = shutil.which(cmd[0])
+                if resolved:
+                    cmd[0] = resolved
             proc = subprocess.run(
-                [npm, "view", cls._NPM_PACKAGE, "version"],
+                cmd,
                 capture_output=True,
                 text=True,
-                timeout=5,
+                timeout=10,
             )
         except subprocess.TimeoutExpired:
-            cls._npm_resolve_cache = {"error": "timeout (5s) — offline or slow registry"}
-            return cls._npm_resolve_cache
+            return {"error": "timeout (10s) — offline or slow registry"}
         except (OSError, subprocess.SubprocessError) as e:
-            cls._npm_resolve_cache = {"error": f"npm view failed: {type(e).__name__}"}
-            return cls._npm_resolve_cache
+            return {"error": f"npm view failed: {type(e).__name__}"}
 
         if proc.returncode != 0:
             stderr = (proc.stderr or "").strip()
-            # Most common failure is 404 (package unpublished or name wrong).
+            # 404 is definitive, so we can cache it.
             if "404" in stderr or "E404" in stderr:
                 cls._npm_resolve_cache = {
                     "error": f"npm package `{cls._NPM_PACKAGE}` not found (404)"
                 }
+                return cls._npm_resolve_cache
             else:
                 tail = stderr.splitlines()[-1][:200] if stderr else f"exit {proc.returncode}"
-                cls._npm_resolve_cache = {"error": f"npm view failed: {tail}"}
-            return cls._npm_resolve_cache
+                return {"error": f"npm view failed: {tail}"}
 
         version = (proc.stdout or "").strip()
         if not version:
-            cls._npm_resolve_cache = {"error": "npm view returned empty version"}
-        else:
-            cls._npm_resolve_cache = {"version": version}
+            return {"error": "npm view returned empty version"}
+        
+        cls._npm_resolve_cache = {"version": version}
         return cls._npm_resolve_cache
 
     def _runtime_check(self) -> dict[str, Any]:
