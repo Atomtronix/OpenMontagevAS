@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenMontage Control Panel</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar animate-fade-in">
+            <div class="sidebar-brand">
+                <svg class="brand-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
+                <div class="brand-text">
+                    <h1>OpenMontage</h1>
+                    <span>Orchestration Engine</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="projects">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    <span>Projects</span>
+                </button>
+                <button class="nav-item" data-tab="demo-runner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    <span>Demo Runner</span>
+                </button>
+                <button class="nav-item" data-tab="capabilities">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                    <span>Capabilities</span>
+                </button>
+                <button class="nav-item" data-tab="settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>Settings</span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <span class="version-label">v1.0.0 Production</span>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header Status Bar -->
+            <header class="header animate-slide-down">
+                <div class="header-title">
+                    <h2 id="page-title">Dashboard</h2>
+                </div>
+                
+                <div class="header-status">
+                    <!-- Budget tracker -->
+                    <div class="budget-badge">
+                        <div class="budget-info">
+                            <span class="budget-label">Spent Limit:</span>
+                            <span class="budget-value" id="budget-progress-text">$0.00 / $10.00</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="budget-progress-bar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Runtime Indicators -->
+                    <div class="runtime-indicators">
+                        <div class="indicator" id="status-node">
+                            <span class="indicator-dot"></span>
+                            <span class="indicator-label">Node</span>
+                        </div>
+                        <div class="indicator" id="status-ffmpeg">
+                            <span class="indicator-dot"></span>
+                            <span class="indicator-label">FFmpeg</span>
+                        </div>
+                        <div class="indicator" id="status-gpu">
+                            <span class="indicator-dot"></span>
+                            <span class="indicator-label">GPU/Local</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="view-container">
+                <!-- ================= DASHBOARD TAB ================= -->
+                <section id="view-dashboard" class="view-pane active">
+                    <div class="dashboard-hero">
+                        <div class="hero-text">
+                            <h3>Welcome to OpenMontage Studio</h3>
+                            <p>Coordinate advanced video creation pipelines utilizing state-of-the-art local models and global APIs. Craft cinematic clips, technical code walkthroughs, and animated explainer videos from a single prompt.</p>
+                        </div>
+                        <div class="hero-actions">
+                            <button class="btn btn-primary" onclick="showCreateProjectView()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <span>Create Project</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-grid">
+                        <div class="card card-status">
+                            <h4>System Health Overview</h4>
+                            <div class="status-list">
+                                <div class="status-row">
+                                    <span>Vite & Remotion Server</span>
+                                    <span class="status-pill green" id="health-remotion">Checked</span>
+                                </div>
+                                <div class="status-row">
+                                    <span>HyperFrames Compiler</span>
+                                    <span class="status-pill green" id="health-hf">Ready</span>
+                                </div>
+                                <div class="status-row">
+                                    <span>Available Pipelines</span>
+                                    <span class="status-pill purple" id="health-pipelines-count">12 Loaded</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card card-cost">
+                            <h4>Cost Control Policy</h4>
+                            <div class="cost-content">
+                                <div class="cost-metric">
+                                    <span class="cost-number" id="cost-limit">$10.00</span>
+                                    <span class="cost-label">Total Allocated Budget</span>
+                                </div>
+                                <div class="cost-metric">
+                                    <span class="cost-number" id="cost-mode">WARN</span>
+                                    <span class="cost-label">Budget Governance Mode</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card card-upgrade mt-4">
+                        <h4>Rapid API Upgrades</h4>
+                        <p class="text-muted mb-4">Set environment variables in your Settings panel to instantly unlock premium local/cloud generators.</p>
+                        <div class="upgrades-grid" id="upgrade-cards">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= PROJECTS TAB ================= -->
+                <section id="view-projects" class="view-pane">
+                    <!-- Projects List View -->
+                    <div id="projects-list-container">
+                        <div class="view-header-bar">
+                            <h3>Active Projects</h3>
+                            <button class="btn btn-primary" onclick="showCreateProjectForm()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <span>New Project</span>
+                            </button>
+                        </div>
+                        
+                        <div class="projects-grid" id="projects-grid">
+                            <!-- Populated dynamically -->
+                            <div class="empty-state">
+                                <p>Loading active projects...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Create Project Form -->
+                    <div id="projects-create-container" style="display: none;">
+                        <div class="back-link" onclick="hideCreateProjectForm()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                            <span>Back to Projects</span>
+                        </div>
+                        <div class="card max-w-2xl mt-4">
+                            <h4>Initialize New Video Project</h4>
+                            <form id="create-project-form" class="form-grid">
+                                <div class="form-group">
+                                    <label for="p-id">Project Identifier (kebab-case)</label>
+                                    <input type="text" id="p-id" placeholder="e.g., hidden-math-of-nature" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="p-title">Video Title</label>
+                                    <input type="text" id="p-title" placeholder="e.g., The Hidden Mathematics of Nature" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="p-pipeline">Pipeline Definition</label>
+                                    <select id="p-pipeline" required>
+                                        <!-- Loaded dynamically -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="p-playbook">Style Playbook</label>
+                                    <select id="p-playbook" required>
+                                        <option value="clean-professional">Clean Professional (Corporate, SaaS)</option>
+                                        <option value="flat-motion-graphics">Flat Motion Graphics (Social, Startups)</option>
+                                        <option value="minimalist-diagram">Minimalist Diagram (Deep-Dives)</option>
+                                        <option value="anime-ghibli">Anime Ghibli (Hand-painted feel)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="p-platform">Target Platform</label>
+                                    <select id="p-platform">
+                                        <option value="youtube">YouTube (16:9 Landscape)</option>
+                                        <option value="tiktok">TikTok/Shorts (9:16 Vertical)</option>
+                                        <option value="instagram">Instagram (1:1 Square)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="p-duration">Target Duration (Seconds)</label>
+                                    <input type="number" id="p-duration" value="60" min="5" max="300">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="p-prompt">Project Prompt / Visual Brief</label>
+                                    <textarea id="p-prompt" rows="4" placeholder="Describe the script, narrative arc, and tone of the video..." required></textarea>
+                                </div>
+                                <div class="form-actions full-width">
+                                    <button type="button" class="btn btn-secondary" onclick="hideCreateProjectForm()">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Create Workspace</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Project Details View -->
+                    <div id="projects-detail-container" style="display: none;">
+                        <div class="back-link" onclick="hideProjectDetails()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                            <span>Back to Projects</span>
+                        </div>
+                        
+                        <div class="project-details-grid mt-4">
+                            <!-- Left: Checkpoint Workflow -->
+                            <div class="details-left">
+                                <div class="card">
+                                    <div class="card-header-flex">
+                                        <h4 id="detail-project-title">Project Name</h4>
+                                        <span class="status-pill green" id="detail-project-status">completed</span>
+                                    </div>
+                                    <p class="text-muted" id="detail-project-meta">Pipeline: animated-explainer</p>
+                                    
+                                    <!-- Stepper Timeline -->
+                                    <div class="stepper mt-4" id="project-stepper">
+                                        <!-- Populated dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right: Artifact Inspections & Preview -->
+                            <div class="details-right">
+                                <!-- Video Preview Card -->
+                                <div class="card" id="detail-video-card" style="display: none;">
+                                    <h4>Final Render Output</h4>
+                                    <div class="video-wrapper mt-3">
+                                        <video id="detail-video-player" controls>
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
+                                    <div class="video-info mt-2">
+                                        <span id="detail-video-size">File Size: 0.0 MB</span>
+                                        <span id="detail-video-duration">Duration: 60s</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Artifact Details Tabs -->
+                                <div class="card mt-4">
+                                    <div class="tab-selectors border-b">
+                                        <button class="artifact-tab-btn active" data-art-tab="script">Script</button>
+                                        <button class="artifact-tab-btn" data-art-tab="scene_plan">Scene Plan</button>
+                                        <button class="artifact-tab-btn" data-art-tab="decisions">Decision Log</button>
+                                        <button class="artifact-tab-btn" data-art-tab="files">Assets</button>
+                                    </div>
+                                    
+                                    <div class="artifact-tabs-content mt-3">
+                                        <!-- Script Artifact -->
+                                        <div class="artifact-tab-pane active" id="art-tab-script">
+                                            <div class="empty-state">No script generated yet.</div>
+                                        </div>
+                                        <!-- Scene Plan Artifact -->
+                                        <div class="artifact-tab-pane" id="art-tab-scene_plan">
+                                            <div class="empty-state">No scene plan generated yet.</div>
+                                        </div>
+                                        <!-- Decision Log -->
+                                        <div class="artifact-tab-pane" id="art-tab-decisions">
+                                            <div class="empty-state">No decisions logged.</div>
+                                        </div>
+                                        <!-- Assets List -->
+                                        <div class="artifact-tab-pane" id="art-tab-files">
+                                            <table class="assets-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>File Name</th>
+                                                        <th>Path</th>
+                                                        <th>Size</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="assets-list-body">
+                                                    <!-- Loaded dynamically -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= DEMO RUNNER TAB ================= -->
+                <section id="view-demo-runner" class="view-pane">
+                    <div class="demo-runner-grid">
+                        <!-- Left: Demo list -->
+                        <div class="demo-left">
+                            <div class="card">
+                                <h4>Zero-Key Remotion Demos</h4>
+                                <p class="text-muted mb-4">Select and render pre-built scene timelines entirely in your browser without requiring external API keys.</p>
+                                <div class="demo-list" id="demos-container">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right: Live Log terminal and Video player -->
+                        <div class="demo-right">
+                            <div class="card log-card">
+                                <div class="log-card-header">
+                                    <h4>Render Console Log</h4>
+                                    <span class="status-pill text-muted" id="render-status">idle</span>
+                                </div>
+                                <div class="terminal mt-3" id="log-terminal">
+                                    <div class="terminal-line system">OpenMontage rendering terminal ready. Select a demo to start.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="card video-card mt-4" id="demo-video-card" style="display: none;">
+                                <h4>Demo Render Output</h4>
+                                <div class="video-wrapper mt-3">
+                                    <video id="demo-video-player" controls>
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= CAPABILITIES TAB ================= -->
+                <section id="view-capabilities" class="view-pane">
+                    <div class="card">
+                        <h4>Tool Capability Catalog</h4>
+                        <p class="text-muted">A full discovery scan of all tools configured in the OpenMontage engine. To unlock unavailable capabilities, click Settings to configure keys.</p>
+                        
+                        <div class="capabilities-catalog mt-4" id="capabilities-catalog">
+                            <!-- Loaded dynamically -->
+                            <p>Loading capability catalog...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= SETTINGS TAB ================= -->
+                <section id="view-settings" class="view-pane">
+                    <div class="card max-w-3xl">
+                        <div class="card-header-flex">
+                            <div>
+                                <h4>API Keys & Engine Configurations</h4>
+                                <p class="text-muted">Edit credential keys in the .env file. The credentials are masked for your security.</p>
+                            </div>
+                            <button type="submit" form="settings-form" class="btn btn-primary">Save Settings</button>
+                        </div>
+                        
+                        <form id="settings-form" class="settings-form mt-4">
+                            <!-- Populated dynamically -->
+                            <div class="empty-state">Loading configuration keys...</div>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
