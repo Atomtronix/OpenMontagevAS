@@ -497,6 +497,335 @@ async def serve_root():
     with open(index_file) as f:
         return f.read()
 
+def get_mock_artifact_for_stage(stage: str, project_id: str, pipeline_type: str) -> Dict[str, Any]:
+    if stage == "research":
+        return {
+            "research_brief": {
+                "version": "1.0",
+                "topic": "AI Video Production",
+                "research_date": "2026-04-02",
+                "landscape": {
+                    "existing_content": [
+                        {"title": "AI Video Tools", "source": "youtube", "angle": "tutorial", "what_it_covers": "comparison", "what_it_misses": "pipeline"},
+                        {"title": "Making Videos with AI", "source": "blog", "angle": "overview", "what_it_covers": "market landscape", "what_it_misses": "hands-on"},
+                        {"title": "AI Content Creation", "source": "youtube", "angle": "how-to", "what_it_covers": "individual tools", "what_it_misses": "orchestration"}
+                    ],
+                    "saturated_angles": ["tool demos"],
+                    "underserved_gaps": ["orchestration"],
+                },
+                "data_points": [
+                    {"claim": "AI video growing 25%", "source_url": "https://example.com/report", "credibility": "primary_source"},
+                    {"claim": "70% of creators want automation", "source_url": "https://example.com/survey", "credibility": "primary_source"},
+                    {"claim": "Production time drops 80%", "source_url": "https://example.com/study", "credibility": "secondary_source"}
+                ],
+                "audience_insights": {
+                    "common_questions": ["Is it fast?", "Is it cheap?", "Is it high quality?"],
+                    "misconceptions": [{"myth": "bad quality", "reality": "good quality"}],
+                    "knowledge_level": "beginner",
+                },
+                "angles_discovered": [
+                    {"name": "60s Studio", "hook": "fast", "type": "trending", "why_now": "ready"},
+                    {"name": "Quality Demo", "hook": "high quality", "type": "evergreen", "why_now": "ready"},
+                    {"name": "Hidden Cost", "hook": "cheap", "type": "contrarian", "why_now": "ready"}
+                ],
+                "sources": [
+                    {"url": "https://example.com/ai-video", "title": "AI Overview", "used_for": "landscape"},
+                    {"url": "https://example.com/ai-tools", "title": "AI Tools", "used_for": "landscape"},
+                    {"url": "https://example.com/automation", "title": "Automation", "used_for": "landscape"},
+                    {"url": "https://example.com/pipeline", "title": "Pipeline", "used_for": "landscape"},
+                    {"url": "https://example.com/cost", "title": "Cost Analysis", "used_for": "landscape"}
+                ]
+            }
+        }
+    elif stage == "proposal":
+        return {
+            "proposal_packet": {
+                "version": "1.0",
+                "concept_options": [
+                    {
+                        "id": "c1",
+                        "title": "AI Video Production in 60 Seconds",
+                        "hook": "What if you could create a professional video in 60 seconds?",
+                        "narrative_structure": "problem_solution",
+                        "visual_approach": "Clean motion graphics",
+                        "suggested_playbook": "clean-professional",
+                        "target_audience": "content creators",
+                        "target_platform": "youtube",
+                        "target_duration_seconds": 60,
+                        "why_this_works": "Direct framing",
+                    },
+                    {
+                        "id": "c2",
+                        "title": "The 60-Second Studio",
+                        "hook": "Your entire production team in a single prompt",
+                        "narrative_structure": "journey",
+                        "visual_approach": "Animated workflow diagram",
+                        "suggested_playbook": "flat-motion-graphics",
+                        "target_audience": "content creators",
+                        "target_platform": "youtube",
+                        "target_duration_seconds": 60,
+                        "why_this_works": "Journey structure",
+                    },
+                    {
+                        "id": "c3",
+                        "title": "From Prompt to Premiere",
+                        "hook": "Traditional video production takes weeks. This takes seconds.",
+                        "narrative_structure": "comparison",
+                        "visual_approach": "Split-screen timeline",
+                        "suggested_playbook": "clean-professional",
+                        "target_audience": "content creators",
+                        "target_platform": "youtube",
+                        "target_duration_seconds": 60,
+                        "why_this_works": "Comparison structure",
+                    }
+                ],
+                "selected_concept": {"concept_id": "c1", "rationale": "effective"},
+                "production_plan": {
+                    "pipeline": pipeline_type,
+                    "playbook": "clean-professional",
+                    "render_runtime": "remotion",
+                    "stages": [
+                        {"stage": "script", "tools": [], "approach": "AI-written"},
+                        {"stage": "scene_plan", "tools": [], "approach": "5 scenes"},
+                        {"stage": "assets", "tools": [], "approach": "AI-generated"},
+                        {"stage": "edit", "tools": [], "approach": "Automated"},
+                        {"stage": "compose", "tools": [], "approach": "Remotion render"},
+                    ]
+                },
+                "cost_estimate": {
+                    "total_estimated_usd": 0.50,
+                    "line_items": [
+                        {"tool": "image_selector", "operation": "5 images", "estimated_usd": 0.50}
+                    ],
+                    "budget_verdict": "within_budget"
+                },
+                "approval": {
+                    "status": "approved",
+                    "approved_budget_usd": 2.00
+                }
+            }
+        }
+    elif stage == "script":
+        return {
+            "script": {
+                "version": "1.0",
+                "title": "AI Video Production in 60 Seconds",
+                "total_duration_seconds": 60,
+                "sections": [
+                    {
+                        "id": "s1_hook",
+                        "label": "Hook",
+                        "text": "What if creating a professional video took less time than making coffee?",
+                        "start_seconds": 0,
+                        "end_seconds": 15,
+                        "speaker_directions": "Confident",
+                        "enhancement_cues": [
+                            {"type": "overlay", "description": "Visual for Hook", "timestamp_seconds": 5}
+                        ]
+                    },
+                    {
+                        "id": "s2_landing",
+                        "label": "Landing",
+                        "text": "Try it yourself today.",
+                        "start_seconds": 15,
+                        "end_seconds": 30,
+                        "speaker_directions": "Warm",
+                        "enhancement_cues": [
+                            {"type": "overlay", "description": "Visual for Landing", "timestamp_seconds": 20}
+                        ]
+                    }
+                ]
+            }
+        }
+    elif stage == "scene_plan":
+        return {
+            "scene_plan": {
+                "version": "1.0",
+                "style_playbook": "clean-professional",
+                "scenes": [
+                    {
+                        "id": "scene_1",
+                        "type": "text_card",
+                        "description": "Intro screen",
+                        "start_seconds": 0,
+                        "end_seconds": 15,
+                        "required_assets": [
+                            {"type": "audio", "description": "Background music", "source": "provided"}
+                        ]
+                    },
+                    {
+                        "id": "scene_2",
+                        "type": "animation",
+                        "description": "Outro screen",
+                        "start_seconds": 15,
+                        "end_seconds": 30,
+                        "required_assets": [
+                            {"type": "audio", "description": "Outro music", "source": "provided"}
+                        ]
+                    }
+                ]
+            }
+        }
+    elif stage == "assets":
+        return {
+            "asset_manifest": {
+                "version": "1.0",
+                "assets": [
+                    {
+                        "id": "a1",
+                        "type": "image",
+                        "path": "assets/images/scene_1.png",
+                        "source_tool": "image_selector",
+                        "scene_id": "scene_1"
+                    }
+                ]
+            }
+        }
+    elif stage == "edit":
+        return {
+            "edit_decisions": {
+                "version": "1.0",
+                "render_runtime": "remotion",
+                "cuts": [
+                    {
+                        "id": "c1",
+                        "source": "a1",
+                        "in_seconds": 0,
+                        "out_seconds": 30
+                    }
+                ]
+            }
+        }
+    elif stage == "compose":
+        return {
+            "render_report": {
+                "version": "1.0",
+                "outputs": [
+                    {
+                        "path": "renders/final.mp4",
+                        "format": "mp4",
+                        "resolution": "1280x720",
+                        "duration_seconds": 30,
+                        "file_size_bytes": 1024
+                    }
+                ]
+            }
+        }
+    elif stage == "publish":
+        return {
+            "publish_log": {
+                "version": "1.0",
+                "entries": [
+                    {
+                        "platform": "youtube",
+                        "status": "published",
+                        "timestamp": "2026-04-02T12:00:00Z"
+                    }
+                ]
+            }
+        }
+    return {}
+
+async def pipeline_auto_runner():
+    import time
+    from lib.checkpoint import write_checkpoint, get_next_stage, get_pipeline_stages
+    
+    while True:
+        await asyncio.sleep(2)
+        if not PIPELINE_DIR.exists():
+            continue
+            
+        for path in PIPELINE_DIR.iterdir():
+            if not path.is_dir() or path.name.startswith("."):
+                continue
+                
+            project_id = path.name
+            if project_id == "demos":
+                continue
+                
+            checkpoint_stages = ["research", "proposal", "script", "scene_plan", "assets", "edit", "compose", "publish"]
+            latest_stage = None
+            latest_status = None
+            latest_time = 0
+            
+            pipeline_type = "animated-explainer"
+            style_playbook = "clean-professional"
+            
+            for stg in checkpoint_stages:
+                cp_file = path / f"checkpoint_{stg}.json"
+                if cp_file.exists():
+                    try:
+                        with open(cp_file) as f:
+                            cp_data = json.load(f)
+                            mtime = cp_file.stat().st_mtime
+                            if mtime > latest_time:
+                                latest_time = mtime
+                                latest_stage = stg
+                                latest_status = cp_data.get("status")
+                                pipeline_type = cp_data.get("pipeline_type", pipeline_type)
+                                style_playbook = cp_data.get("style_playbook", style_playbook)
+                    except Exception:
+                        pass
+            
+            if not latest_stage:
+                continue
+                
+            current_time = time.time()
+            
+            if latest_status == "in_progress":
+                if current_time - latest_time >= 5:
+                    mock_art = get_mock_artifact_for_stage(latest_stage, project_id, pipeline_type)
+                    
+                    if latest_stage == "compose":
+                        renders_dir = path / "renders"
+                        renders_dir.mkdir(exist_ok=True)
+                        final_mp4 = renders_dir / "final.mp4"
+                        if not final_mp4.exists():
+                            demo_renders_dir = ROOT_DIR / "projects" / "demos" / "renders"
+                            demo_mp4 = next(demo_renders_dir.glob("*.mp4"), None) if demo_renders_dir.exists() else None
+                            if demo_mp4:
+                                import shutil
+                                shutil.copy(demo_mp4, final_mp4)
+                            else:
+                                final_mp4.write_bytes(b"")
+                                
+                    try:
+                        write_checkpoint(
+                            PIPELINE_DIR,
+                            project_id,
+                            stage=latest_stage,
+                            status="completed",
+                            artifacts=mock_art,
+                            pipeline_type=pipeline_type,
+                            style_playbook=style_playbook,
+                        )
+                    except Exception as e:
+                        print(f"Error completing stage {latest_stage} for {project_id}: {e}")
+                        
+            elif latest_status == "completed":
+                stages = get_pipeline_stages(pipeline_type)
+                try:
+                    next_idx = stages.index(latest_stage) + 1
+                    if next_idx < len(stages):
+                        next_stage = stages[next_idx]
+                        next_file = path / f"checkpoint_{next_stage}.json"
+                        if not next_file.exists():
+                            write_checkpoint(
+                                PIPELINE_DIR,
+                                project_id,
+                                stage=next_stage,
+                                status="in_progress",
+                                artifacts={},
+                                pipeline_type=pipeline_type,
+                                style_playbook=style_playbook,
+                            )
+                except (ValueError, IndexError):
+                    pass
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(pipeline_auto_runner())
+
 app.mount("/", StaticFiles(directory=str(static_dir)), name="static")
 
 if __name__ == "__main__":
